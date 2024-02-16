@@ -16,10 +16,14 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Product>>> Get()
+    public async Task<ActionResult<ServiceResponse<List<Product>>>> Get()
     {
         var products = await dataContext.Products.ToListAsync();
+        var response = new ServiceResponse<List<Product>>()
+        {
+            Data = products
+        };
 
-        return Ok(products);
+        return Ok(response);
     }
 }
