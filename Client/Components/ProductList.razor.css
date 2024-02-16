@@ -23,9 +23,6 @@
     width: 200px;
     text-align:center;
 }
-.price {
-    color: green;
-}
 
 @media (max-width: 1023.98px){
     .media {
