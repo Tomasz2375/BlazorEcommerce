@@ -1,11 +1,9 @@
-﻿using BlazorEcommerce.Server.Data;
-using BlazorEcommerce.Server.Services.ProductService;
+﻿using BlazorEcommerce.Server.Services.ProductService;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BlazorEcommerce.Server.Controllers;
 
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class ProductController : ControllerBase
 {
