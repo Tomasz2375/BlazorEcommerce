@@ -15,7 +15,7 @@ public class ProdctService : IProductService
     public async Task<ServiceResponse<Product>> GetProductAsync(int productId)
     {
         var response = new ServiceResponse<Product>();
-        var product = await dataContext.Products.FindAsync(productId);
+        var product = await dataContext.Products!.FindAsync(productId);
 
         if(product is null)
         {
@@ -36,6 +36,18 @@ public class ProdctService : IProductService
         var response = new ServiceResponse<List<Product>>
         {
             Data = await dataContext.Set<Product>().ToListAsync(),
+        };
+
+        return response;
+    }
+
+    public async Task<ServiceResponse<List<Product>>> GetProductsByCategoryAsync(string categoryUrl)
+    {
+        var response = new ServiceResponse<List<Product>>
+        {
+            Data = await dataContext.Products!
+                .Where(x => x.Category!.Url.ToLower() == categoryUrl.ToLower())
+                .ToListAsync()
         };
 
         return response;
