@@ -14,8 +14,17 @@ else
         <div class="media-body">
             <h2 class="mb-0">@product.Title</h2>
             <p>@product.Description</p>
+            @if (getSelectedVariant() is not null)
+            {
+                @if (getSelectedVariant().OriginalPrice > getSelectedVariant().Price)
+                {
+                    <h6 class="text-muted original-price">
+                        $@getSelectedVariant().OriginalPrice
+                    </h6>
+                }
+            }
             <h4 class="price">
-                @*$@product.Price*@
+                $@getSelectedVariant().Price
             </h4>
         </div>
     </div>
@@ -24,6 +33,7 @@ else
 @code {
     private Product? product = null;
     private string message = string.Empty;
+    private int currentTypeId = 1;
 
     [Parameter]
     public int Id { get; set; }
@@ -40,7 +50,18 @@ else
         else
         {
             product = result.Data;
+            if (product!.Variants.Count > 0)
+            {
+                currentTypeId = product.Variants[0].ProductTypeId;
+            }
         }
+    }
+    private ProductVariant getSelectedVariant()
+    {
+        var variant = product!
+        .Variants
+        .FirstOrDefault(x => x.ProductTypeId == currentTypeId);
 
+        return variant!;
     }
 }
