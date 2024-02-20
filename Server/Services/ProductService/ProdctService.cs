@@ -15,7 +15,11 @@ public class ProdctService : IProductService
     public async Task<ServiceResponse<Product>> GetProductAsync(int productId)
     {
         var response = new ServiceResponse<Product>();
-        var product = await dataContext.Products!.FindAsync(productId);
+        var product = await dataContext
+            .Products!
+            .Include(x => x.Variants)
+            .ThenInclude(x => x.ProductType)
+            .FirstOrDefaultAsync(x => x.Id == productId);
 
         if(product is null)
         {
@@ -35,7 +39,9 @@ public class ProdctService : IProductService
     {
         var response = new ServiceResponse<List<Product>>
         {
-            Data = await dataContext.Set<Product>().ToListAsync(),
+            Data = await dataContext.Set<Product>()
+            .Include(x => x.Variants)
+            .ToListAsync(),
         };
 
         return response;
@@ -47,6 +53,7 @@ public class ProdctService : IProductService
         {
             Data = await dataContext.Products!
                 .Where(x => x.Category!.Url.ToLower() == categoryUrl.ToLower())
+                .Include(x => x.Variants)
                 .ToListAsync()
         };
 
