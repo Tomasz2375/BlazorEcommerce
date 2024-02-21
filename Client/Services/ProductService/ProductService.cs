@@ -44,7 +44,7 @@ public class ProductService : IProductService
     public async Task<List<string>> GetProductSearchSuggestion(string phrase)
     {
         var result = await httpClient
-            .GetFromJsonAsync<ServiceResponse<List<string>>>($"searchsuggestion/{phrase}");
+            .GetFromJsonAsync<ServiceResponse<List<string>>>($"api/product/searchsuggestion/{phrase}");
 
         if (result is null || result.Data is null)
         {
@@ -57,7 +57,7 @@ public class ProductService : IProductService
     public async Task SearchProducts(string phrase)
     {
         var result = await httpClient
-            .GetFromJsonAsync<ServiceResponse<List<Product>>>($"search/{phrase}");
+            .GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/search/{phrase}");
 
         if (result is null || result.Data is null)
         {
