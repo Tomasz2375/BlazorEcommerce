@@ -10,6 +10,7 @@ public class Product
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public string ImageUrl { get; set; } = string.Empty;
+    public bool Featured { get; set; }
 
     public Category? Category { get; set; }
 
