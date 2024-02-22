@@ -108,6 +108,20 @@ public class ProdctService : IProductService
         return new ServiceResponse<List<string>> { Data = result };
     }
 
+    public async Task<ServiceResponse<List<Product>>> GetFeaturedProducts()
+    {
+        var response = new ServiceResponse<List<Product>>()
+        {
+            Data = await dataContext
+            .Products!
+            .Include(x => x.Variants)
+            .Where(x => x.Featured)
+            .ToListAsync(),
+        };
+
+        return response;
+    }
+
     private Task<List<Product>> getProductBySearchPhrase(string phrase)
     {
         return dataContext
