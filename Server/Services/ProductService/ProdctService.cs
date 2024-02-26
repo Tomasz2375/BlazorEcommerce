@@ -1,4 +1,5 @@
 ﻿using BlazorEcommerce.Server.Data;
+using BlazorEcommerce.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorEcommerce.Server.Services.ProductService;
@@ -60,11 +61,28 @@ public class ProdctService : IProductService
         return response;
     }
 
-    public async Task<ServiceResponse<List<Product>>> SearchProducts(string phrase)
+    public async Task<ServiceResponse<ProductSearchResultDto>> SearchProducts(string phrase, int page)
     {
-        var response = new ServiceResponse<List<Product>>
+        var pageResults = 2;
+        var pageCount = MathF.Ceiling((await getProductBySearchPhrase(phrase)).Count / (float)pageResults);
+        var products = await dataContext
+            .Products!
+            .Include(x => x.Variants)
+            .Where(x =>
+                x.Title.ToLower().Contains(phrase.ToLower()) ||
+                x.Description.ToLower().Contains(phrase.ToLower()))
+            .Skip((page - 1) * pageResults)
+            .Take(pageResults)
+            .ToListAsync();
+
+        var response = new ServiceResponse<ProductSearchResultDto>
         {
-            Data = await getProductBySearchPhrase(phrase)
+            Data = new ProductSearchResultDto
+            {
+                Products = products,
+                CurrentPage = page,
+                Pages = (int)pageCount,
+            }
         };
 
         return response;
@@ -122,14 +140,14 @@ public class ProdctService : IProductService
         return response;
     }
 
-    private Task<List<Product>> getProductBySearchPhrase(string phrase)
+    private async Task<List<Product>> getProductBySearchPhrase(string phrase)
     {
-        return dataContext
+        return await dataContext
                     .Products!
                     .Include(x => x.Variants)
                     .Where(x =>
                         x.Title.ToLower().Contains(phrase.ToLower()) ||
-                        x.Description.ToLower().Contains(phrase.ToLower())
-                    ).ToListAsync();
+                        x.Description.ToLower().Contains(phrase.ToLower()))
+                    .ToListAsync();
     }
 }
