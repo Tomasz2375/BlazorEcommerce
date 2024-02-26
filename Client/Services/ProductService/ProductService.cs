@@ -1,4 +1,5 @@
 ﻿using BlazorEcommerce.Shared;
+using BlazorEcommerce.Shared.Dtos;
 using System.Net.Http.Json;
 
 namespace BlazorEcommerce.Client.Services.ProductService;
@@ -14,6 +15,9 @@ public class ProductService : IProductService
 
     public List<Product> Products { get; set; } = new();
     public string Message { get; set; } = "Loading products...";
+    public int CurrentPage { get; set; } = 1;
+    public int PageCount { get; set; }
+    public string LastSearchText { get; set; } = string.Empty;
 
     public event Action ProductsChanged;
 
@@ -35,8 +39,14 @@ public class ProductService : IProductService
         {
             return;
         }
-
         Products = result.Data;
+
+        CurrentPage = 1;
+        PageCount = 0;
+        if (Products.Count == 0)
+        {
+            Message = "No products found";
+        }
 
         ProductsChanged.Invoke();
     }
@@ -54,17 +64,19 @@ public class ProductService : IProductService
         return result.Data!;
     }
 
-    public async Task SearchProducts(string phrase)
+    public async Task SearchProducts(string phrase, int page)
     {
         var result = await httpClient
-            .GetFromJsonAsync<ServiceResponse<List<Product>>>($"api/product/search/{phrase}");
+            .GetFromJsonAsync<ServiceResponse<ProductSearchResultDto>>($"api/product/search/{phrase}/{page}");
 
         if (result is null || result.Data is null)
         {
             return;
         }
 
-        Products = result.Data;
+        Products = result.Data.Products;
+        CurrentPage = result.Data.CurrentPage;
+        PageCount = result.Data.Pages;
 
         if (Products.Count == 0)
         {
