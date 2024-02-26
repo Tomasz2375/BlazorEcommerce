@@ -66,6 +66,7 @@ public class ProductService : IProductService
 
     public async Task SearchProducts(string phrase, int page)
     {
+        LastSearchText = phrase;
         var result = await httpClient
             .GetFromJsonAsync<ServiceResponse<ProductSearchResultDto>>($"api/product/search/{phrase}/{page}");
 
