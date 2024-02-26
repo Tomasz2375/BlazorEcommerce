@@ -1,5 +1,6 @@
 ﻿using BlazorEcommerce.Server.Services.ProductService;
 using BlazorEcommerce.Shared;
+using BlazorEcommerce.Shared.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorEcommerce.Server.Controllers;
@@ -40,11 +41,11 @@ public class ProductController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("search/{phrase}")]
-    public async Task<ActionResult<ServiceResponse<List<Product>>>> SearchProducts(string phrase)
+    [HttpGet("search/{phrase}/{page}")]
+    public async Task<ActionResult<ServiceResponse<ProductSearchResultDto>>> SearchProducts(string phrase, int page)
     {
         var result = await productService.
-            SearchProducts(phrase);
+            SearchProducts(phrase, page);
 
         return Ok(result);
     }
