@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlazorEcommerce.Server.Services.CartService;
 
-public class CartService : ICartSerwice
+public class CartService : ICartService
 {
     private readonly DataContext dataContext;
 

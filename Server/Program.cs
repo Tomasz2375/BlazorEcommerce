@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProductService, ProdctService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<ICartSerwice, CartService>();
+builder.Services.AddScoped<ICartService, CartService>();
 
 var app = builder.Build();
 
