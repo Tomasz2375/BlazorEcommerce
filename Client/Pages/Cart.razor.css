@@ -36,3 +36,7 @@
     text-decoration: underline;
     color: #FF0000AA;
 }
+
+.input-quantity {
+    width: 70px;
+}
