@@ -26,7 +26,17 @@ public class CartService : ICartService
             cart = new List<CartItem>();
         }
 
-        cart.Add(cartItem);
+        var sameItem = cart.FirstOrDefault(x => x.ProductId == cartItem.ProductId &&
+            x.ProductTypeId == cartItem.ProductTypeId);
+
+        if (sameItem is null)
+        {
+            cart.Add(cartItem);
+        }
+        else
+        {
+            sameItem.Quantity += cartItem.Quantity;
+        }
 
         await localStorageService.SetItemAsync("cart", cart);
         OnChange.Invoke();
