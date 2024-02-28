@@ -53,4 +53,24 @@ public class CartService : ICartService
 
         return cartProducts!.Data!;
     }
+
+    public async Task RemoveProductFromCart(int productId, int productTypeId)
+    {
+        var cart = await localStorageService.GetItemAsync<List<CartItem>>("cart");
+
+        if (cart is null)
+        {
+            return;
+        }
+
+        var cartItem = cart.Find(x => x.ProductId == productId && x.ProductTypeId == productTypeId);
+
+        if (cartItem is null)
+        {
+            return;
+        }
+        cart.Remove(cartItem);
+        await localStorageService.SetItemAsync("cart", cart);
+        OnChange.Invoke();
+    }
 }
