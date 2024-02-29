@@ -35,6 +35,7 @@ public class AuthenticationService : IAuthenticationService
         return new ServiceResponse<int>()
         {
             Data = user.Id,
+            Message = "Registration successful!",
             Sucess = true,
         };
     }

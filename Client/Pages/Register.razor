@@ -23,27 +23,30 @@
         <ValidationMessage For="@(() => user.ConfirmPassword)" />
     </div>
     <button type="submit" class="btn btn-primary">Register</button>
-    <div class="text-danger">
-        <span>@errorMessage</span>
+    <div class="@messageCssClass">
+        <span>@message</span>
     </div>
 </EditForm>
 
 @code {
     UserRegister user = new();
 
-    string errorMessage = string.Empty;
+    string message = string.Empty;
+    string messageCssClass = string.Empty;
 
     async Task handleReigstration()
     {
         var result = await AuthService.Register(user);
+        message = result.Message;
 
-        if (!result.Sucess)
+        if(result.Sucess)
         {
-            errorMessage = result.Message;
+            messageCssClass = "text-success";
         }
         else
         {
-            errorMessage = string.Empty;
+            messageCssClass = "text-danger";
         }
+
     }
 }
