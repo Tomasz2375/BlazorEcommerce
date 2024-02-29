@@ -17,10 +17,26 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<ServiceResponse<string>> Login(string email, string password)
     {
-        var response = new ServiceResponse<string>
+        var response = new ServiceResponse<string>();
+        var user = await dataContext.Users!
+            .FirstOrDefaultAsync(x => x.Email.ToLower().Equals(email.ToLower()));
+        if (user is null)
         {
-            Data = "token",
-        };
+            response.Sucess = false;
+            response.Message = $"User with email: {email} not found.";
+        }
+        else if(!verifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+        {
+            response.Sucess = false;
+            response.Message = "Wrong password.";
+        }
+        else
+        {
+            response.Sucess = true;
+            response.Data = "token";
+        }
+
+        response.Data = "token";
 
         return response;
     }
@@ -65,6 +81,16 @@ public class AuthenticationService : IAuthenticationService
         {
             passwordSalt = hmac.Key;
             passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+        }
+    }
+
+    private bool verifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+    {
+        using (var hmac = new HMACSHA512(passwordSalt))
+        {
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+            return computedHash.SequenceEqual(passwordHash);
         }
     }
 }
