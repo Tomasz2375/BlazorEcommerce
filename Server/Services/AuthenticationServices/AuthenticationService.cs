@@ -1,5 +1,8 @@
 ﻿using BlazorEcommerce.Server.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -8,10 +11,12 @@ namespace BlazorEcommerce.Server.Services.AuthenticationServices;
 public class AuthenticationService : IAuthenticationService
 {
     private readonly DataContext dataContext;
+    private readonly IConfiguration configuration;
 
-    public AuthenticationService(DataContext dataContext)
+    public AuthenticationService(DataContext dataContext, IConfiguration configuration)
     {
         this.dataContext = dataContext;
+        this.configuration = configuration;
     }
 
 
@@ -33,10 +38,8 @@ public class AuthenticationService : IAuthenticationService
         else
         {
             response.Sucess = true;
-            response.Data = "token";
+            response.Data = createToken(user);
         }
-
-        response.Data = "token";
 
         return response;
     }
@@ -92,5 +95,27 @@ public class AuthenticationService : IAuthenticationService
 
             return computedHash.SequenceEqual(passwordHash);
         }
+    }
+
+    private string createToken(User user)
+    {
+        List<Claim> claims = new()
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Email)
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+            configuration.GetSection("AppSettings:Token").Value));
+
+        var credentials = new SigningCredentials(
+            key, SecurityAlgorithms.HmacSha512Signature);
+
+        var token = new JwtSecurityToken(
+            claims: claims,
+            expires: DateTime.Now.AddDays(1),
+            signingCredentials: credentials);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
