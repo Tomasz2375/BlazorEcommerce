@@ -1,5 +1,4 @@
 ﻿using BlazorEcommerce.Server.Services.AuthenticationServices;
-using BlazorEcommerce.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorEcommerce.Server.Controllers;
@@ -31,4 +30,18 @@ public class AuthenticationController : ControllerBase
 
         return Ok(respose);
     }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<ServiceResponse<string>>> Login(UserLogin request)
+    {
+        var response = await authenticationService.Login(request.Email, request.Password);
+
+        if (!response.Sucess)
+        {
+            return BadRequest(response);
+        }
+
+        return Ok(response);
+    }
+
 }
