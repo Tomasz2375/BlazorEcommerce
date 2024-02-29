@@ -31,7 +31,7 @@ public class CartService : ICartService
                 continue;
             }
 
-            var productVariant = await dataContext.productVariants!
+            var productVariant = await dataContext.ProductVariants!
                 .Include(x => x.ProductType)
                 .Where(x => x.ProductId == cartItem.ProductId &&
                     x.ProductTypeId == cartItem.ProductTypeId)
