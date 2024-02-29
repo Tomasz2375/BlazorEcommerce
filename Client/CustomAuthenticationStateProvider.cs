@@ -6,12 +6,12 @@ using System.Text.Json;
 
 namespace BlazorEcommerce.Client;
 
-public class CustomStateProvider : AuthenticationStateProvider
+public class CustomAuthenticationStateProvider : AuthenticationStateProvider
 {
     private readonly ILocalStorageService localStorageService;
     private readonly HttpClient httpClient;
 
-    public CustomStateProvider(ILocalStorageService localStorageService, HttpClient httpClient)
+    public CustomAuthenticationStateProvider(ILocalStorageService localStorageService, HttpClient httpClient)
     {
         this.localStorageService = localStorageService;
         this.httpClient = httpClient;
