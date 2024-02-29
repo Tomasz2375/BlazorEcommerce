@@ -121,7 +121,7 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<ServiceResponse<bool>> ChangePassword(int userId, string newPassword)
     {
-        var user = await dataContext.Users.FindAsync(userId);
+        var user = await dataContext.Users!.FindAsync(userId);
 
         if (user is null)
         {
