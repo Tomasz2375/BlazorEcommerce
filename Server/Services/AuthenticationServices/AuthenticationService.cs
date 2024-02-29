@@ -14,6 +14,17 @@ public class AuthenticationService : IAuthenticationService
         this.dataContext = dataContext;
     }
 
+
+    public async Task<ServiceResponse<string>> Login(string email, string password)
+    {
+        var response = new ServiceResponse<string>
+        {
+            Data = "token",
+        };
+
+        return response;
+    }
+
     public async Task<ServiceResponse<int>> Register(User user, string password)
     {
         if (await UserExist(user.Email))
