@@ -1,5 +1,20 @@
-﻿namespace BlazorEcommerce.Client.Services.AuthenticationService;
+﻿using System.Net.Http.Json;
+
+namespace BlazorEcommerce.Client.Services.AuthenticationService;
 
 public class AuthService : IAuthService
 {
+    private readonly HttpClient httpClient;
+
+    public AuthService(HttpClient httpClient)
+    {
+        this.httpClient = httpClient;
+    }
+
+    public async Task<ServiceResponse<int>> Register(UserRegister request)
+    {
+        var result = await httpClient.PostAsJsonAsync("api/authentication/register", request);
+
+        return await result.Content.ReadFromJsonAsync<ServiceResponse<int>>();
+    }
 }
