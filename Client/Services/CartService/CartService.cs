@@ -56,7 +56,7 @@ public class CartService : ICartService
         }
 
         await localStorageService.SetItemAsync("cart", cart);
-        OnChange.Invoke();
+        await GetCartItemsCount();
     }
 
     private async Task<bool> isUserAuthenticated() =>
@@ -65,6 +65,7 @@ public class CartService : ICartService
 
     public async Task<List<CartItem>> GetCartItems()
     {
+        await GetCartItemsCount();
         var cart = await localStorageService.GetItemAsync<List<CartItem>>("cart");
 
         if (cart is null)
@@ -139,5 +140,23 @@ public class CartService : ICartService
         }
         cartItem.Quantity = product.Quantity;
         await localStorageService.SetItemAsync("cart", cart);
+    }
+
+    public async Task GetCartItemsCount()
+    {
+        if (await isUserAuthenticated())
+        {
+            var result = await httpClient.GetFromJsonAsync<ServiceResponse<int>>("api/cart/count");
+            var count = result!.Data;
+
+            await localStorageService.SetItemAsync<int>("cartItemsCount", count);
+        }
+        else
+        {
+            var cart = await localStorageService.GetItemAsync<List<CartItem>>("cart");
+            await localStorageService.SetItemAsync<int>("CartItemsCount", cart != null ? cart.Count : 0);
+        }
+
+        OnChange.Invoke();
     }
 }

@@ -8,11 +8,7 @@
 </a>
 
 @code {
-    private int getCartItemsCount()
-    {
-        var cart = LocalStorage.GetItem<List<CartItem>>("cart");
-        return cart is null ? 0 : cart.Count;
-    }
+    private int getCartItemsCount() => LocalStorage.GetItem<int>("cartItemsCount");
 
     protected override void OnInitialized()
     {
