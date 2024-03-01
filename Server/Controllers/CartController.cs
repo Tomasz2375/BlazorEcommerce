@@ -32,4 +32,10 @@ public class CartController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpGet("count")]
+    public async Task<ActionResult<ServiceResponse<int>>> GetCartItemsCount()
+    {
+        return await cartService.GetCartItemsCount();
+    }
 }

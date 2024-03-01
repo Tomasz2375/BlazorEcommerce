@@ -16,6 +16,19 @@ public class CartService : ICartService
         this.httpContextAccessor = httpContextAccessor;
     }
 
+    public async Task<ServiceResponse<int>> GetCartItemsCount()
+    {
+        var count = (await dataContext.CartItems!
+            .Where(x => x.UserId == getUserId())
+            .ToListAsync()).Count;
+
+        return new ServiceResponse<int>()
+        {
+            Data = count,
+            Sucess = true,
+        };
+    }
+
     public async Task<ServiceResponse<List<CartProductResponseDto>>> GetCartPrductAsync(List<CartItem> cartItems)
     {
         var result = new ServiceResponse<List<CartProductResponseDto>>()
