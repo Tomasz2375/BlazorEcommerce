@@ -11,7 +11,10 @@ public class DataContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ProductVariant>()
-            .HasKey(p => new { p.ProductId, p.ProductTypeId});
+            .HasKey(pv => new { pv.ProductId, pv.ProductTypeId});
+
+        modelBuilder.Entity<CartItem>()
+            .HasKey(ci => new { ci.UserId, ci.ProductId, ci.ProductTypeId });
 
         modelBuilder.Entity<Category>().HasData(
             new Category()
@@ -262,4 +265,5 @@ public class DataContext : DbContext
     public DbSet<ProductType>? ProductTypes { get; set; }
     public DbSet<ProductVariant>? ProductVariants { get; set; }
     public DbSet<User>? Users { get; set; }
+    public DbSet<CartItem>? CartItems { get; set; }
 }
