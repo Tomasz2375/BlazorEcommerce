@@ -70,6 +70,34 @@ public class AuthenticationService : IAuthenticationService
         };
     }
 
+    public async Task<ServiceResponse<bool>> ChangePassword(int userId, string newPassword)
+    {
+        var user = await dataContext.Users!.FindAsync(userId);
+
+        if (user is null)
+        {
+            return new ServiceResponse<bool>()
+            {
+                Sucess = false,
+                Message = "User not found."
+            };
+        }
+
+        createPasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
+
+        user.PasswordHash = passwordHash;
+        user.PasswordSalt = passwordSalt;
+
+        await dataContext.SaveChangesAsync();
+
+        return new ServiceResponse<bool>()
+        {
+            Sucess = true,
+            Data = true,
+            Message = "Password has been changed",
+        };
+    }
+
     public async Task<bool> UserExist(string email) =>
         await dataContext
         .Users!
@@ -117,32 +145,5 @@ public class AuthenticationService : IAuthenticationService
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-
-    public async Task<ServiceResponse<bool>> ChangePassword(int userId, string newPassword)
-    {
-        var user = await dataContext.Users!.FindAsync(userId);
-
-        if (user is null)
-        {
-            return new ServiceResponse<bool>()
-            {
-                Sucess = false,
-                Message = "User not found."
-            };
-        }
-
-        createPasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
-
-        user.PasswordHash = passwordHash;
-        user.PasswordSalt = passwordSalt;
-
-        await dataContext.SaveChangesAsync();
-
-        return new ServiceResponse<bool>()
-        {
-            Data = true,
-            Message = "Password has been changed",
-        };
     }
 }
