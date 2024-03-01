@@ -5,5 +5,5 @@ namespace BlazorEcommerce.Server.Services.CartService;
 public interface ICartService
 {
     Task<ServiceResponse<List<CartProductResponseDto>>> GetCartPrductAsync(List<CartItem> cartItems);
-    Task<ServiceResponse<List<CartProductResponseDto>>> StoreCartItems(List<CartItem> cartItems, int userId);
+    Task<ServiceResponse<List<CartProductResponseDto>>> StoreCartItems(List<CartItem> cartItems);
 }
