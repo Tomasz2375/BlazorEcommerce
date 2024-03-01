@@ -38,4 +38,12 @@ public class CartController : ControllerBase
     {
         return await cartService.GetCartItemsCount();
     }
+
+    [HttpGet]
+    public async Task<ActionResult<ServiceResponse<List<CartProductResponseDto>>>> GetDbCartProducts()
+    {
+        var result = await cartService.GetDbCartProducts();
+
+        return Ok(result);
+    }
 }

@@ -75,15 +75,19 @@ public class CartService : ICartService
         return result;
     }
 
+    public async Task<ServiceResponse<List<CartProductResponseDto>>> GetDbCartProducts()
+    {
+        return await GetCartPrductAsync(await dataContext.CartItems
+            .Where(x => x.UserId == getUserId()).ToListAsync());
+    }
+
     public async Task<ServiceResponse<List<CartProductResponseDto>>> StoreCartItems(List<CartItem> cartItems)
     {
         cartItems.ForEach(cartItem => cartItem.UserId = getUserId());
         dataContext.CartItems!.AddRange(cartItems);
         await dataContext.SaveChangesAsync();
 
-        return await GetCartPrductAsync(
-            await dataContext.CartItems
-            .Where(x => x.UserId == getUserId()).ToListAsync());
+        return await GetDbCartProducts();
     }
     private int getUserId() =>
         int.Parse(httpContextAccessor.HttpContext!
