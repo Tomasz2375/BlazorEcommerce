@@ -1,6 +1,8 @@
-﻿using BlazorEcommerce.Shared;
+﻿using BlazorEcommerce.Client.Pages;
+using BlazorEcommerce.Shared;
 using BlazorEcommerce.Shared.Dtos;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Json;
 
 namespace BlazorEcommerce.Client.Services.CartService;
@@ -9,17 +11,32 @@ public class CartService : ICartService
 {
     private readonly ILocalStorageService localStorageService;
     private readonly HttpClient httpClient;
+    private readonly AuthenticationStateProvider authenticationStateProvider;
 
-    public CartService(ILocalStorageService localStorageService, HttpClient httpClient)
+    public CartService(
+        ILocalStorageService localStorageService,
+        HttpClient httpClient,
+        AuthenticationStateProvider authenticationStateProvider)
     {
         this.localStorageService = localStorageService;
         this.httpClient = httpClient;
+        this.authenticationStateProvider = authenticationStateProvider;
     }
 
     public event Action OnChange;
 
     public async Task AddToCart(CartItem cartItem)
     {
+        if((await authenticationStateProvider.GetAuthenticationStateAsync())
+            .User.Identity!.IsAuthenticated)
+        {
+            Console.WriteLine("User is authenticated");
+        }
+        else
+        {
+            Console.WriteLine("User is NOT authenticated");
+        }
+
         var cart = await localStorageService.GetItemAsync<List<CartItem>>("cart");
 
         if (cart is null)
@@ -83,6 +100,23 @@ public class CartService : ICartService
         cart.Remove(cartItem);
         await localStorageService.SetItemAsync("cart", cart);
         OnChange.Invoke();
+    }
+
+    public async Task StoreCartItems(bool emptyLocalCart)
+    {
+        var localCart = await localStorageService.GetItemAsync<List<CartItem>>("cart");
+
+        if (localCart is null)
+        {
+            return;
+        }
+
+        await httpClient.PostAsJsonAsync("api/cart", localCart);
+
+        if (emptyLocalCart)
+        {
+            await localStorageService.RemoveItemAsync("cart");
+        }
     }
 
     public async Task UpdateQuantity(CartProductResponseDto product)
