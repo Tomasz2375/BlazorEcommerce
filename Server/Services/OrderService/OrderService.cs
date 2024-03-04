@@ -43,6 +43,7 @@ public class OrderService : IOrderService
             TotalPrice = totalPrice,
             Items = orderItems
         };
+        dataContext.Orders!.Add(order);
         await dataContext.SaveChangesAsync();
 
         return new ServiceResponse<bool> { Data = true, Sucess = true };
