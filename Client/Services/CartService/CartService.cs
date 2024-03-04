@@ -83,22 +83,31 @@ public class CartService : ICartService
 
     public async Task RemoveProductFromCart(int productId, int productTypeId)
     {
-        var cart = await localStorageService.GetItemAsync<List<CartItem>>("cart");
-
-        if (cart is null)
+        if (await isUserAuthenticated())
         {
-            return;
+            await httpClient.DeleteAsync($"api/cart/{productId}/{productTypeId}");
         }
-
-        var cartItem = cart.Find(x => x.ProductId == productId && x.ProductTypeId == productTypeId);
-
-        if (cartItem is null)
+        else
         {
-            return;
+            var cart = await localStorageService.GetItemAsync<List<CartItem>>("cart");
+
+            if (cart is null)
+            {
+                return;
+            }
+
+            var cartItem = cart.Find(
+                x => x.ProductId == productId &&
+                x.ProductTypeId == productTypeId);
+
+            if (cartItem is null)
+            {
+                return;
+            }
+
+            cart.Remove(cartItem);
+            await localStorageService.SetItemAsync("cart", cart);
         }
-        cart.Remove(cartItem);
-        await localStorageService.SetItemAsync("cart", cart);
-        OnChange.Invoke();
     }
 
     public async Task StoreCartItems(bool emptyLocalCart)

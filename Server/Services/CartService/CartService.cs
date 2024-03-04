@@ -1,4 +1,5 @@
 ﻿using BlazorEcommerce.Server.Data;
+using BlazorEcommerce.Shared;
 using BlazorEcommerce.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -103,6 +104,30 @@ public class CartService : ICartService
     {
         return await GetCartPrductAsync(await dataContext.CartItems
             .Where(x => x.UserId == getUserId()).ToListAsync());
+    }
+
+    public async Task<ServiceResponse<bool>> RemoveItemFromCart(int productId, int productTypeId)
+    {
+        var dbCartItem = await dataContext.CartItems!
+            .FirstOrDefaultAsync(x =>
+                x.ProductId == productId &&
+                x.ProductTypeId == productTypeId &&
+                x.UserId == getUserId());
+
+        if (dbCartItem is null)
+        {
+            return new ServiceResponse<bool>
+            {
+                Data = false,
+                Sucess = false,
+                Message = "Cart item does not exist",
+            };
+        }
+
+        dataContext.CartItems?.Remove(dbCartItem);
+        await dataContext.SaveChangesAsync();
+
+        return new ServiceResponse<bool> { Data = true, Sucess = true };
     }
 
     public async Task<ServiceResponse<List<CartProductResponseDto>>> StoreCartItems(List<CartItem> cartItems)
