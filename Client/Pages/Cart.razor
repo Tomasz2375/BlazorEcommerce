@@ -6,7 +6,11 @@
 
 <h3>Shopping cart</h3>
 
-@if (cartProducts is null || cartProducts.Count == 0)
+@if (orderPlace)
+{
+    <span> Thenk you for your order! You can check your orders <a href="orders">here</a></span>
+}
+else if (cartProducts is null || cartProducts.Count == 0)
 {
     <span>@message</span>
 }
@@ -41,9 +45,11 @@ else
 @code {
     List<CartProductResponseDto> cartProducts = null;
     string message = "Loading cart...";
+    bool orderPlace;
 
     protected override async Task OnInitializedAsync()
     {
+        orderPlace = false;
         await LoadCart();
     }
 
@@ -80,5 +86,7 @@ else
     private async Task placeOrder()
     {
         await OrderService.PlaceOrder();
+        await CartService.GetCartItemsCount();
+        orderPlace = true;
     }
 }
