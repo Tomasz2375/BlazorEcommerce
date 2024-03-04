@@ -16,6 +16,30 @@ public class CartService : ICartService
         this.httpContextAccessor = httpContextAccessor;
     }
 
+    public async Task<ServiceResponse<bool>> AddToCart(CartItem cartItem)
+    {
+        cartItem.UserId = getUserId();
+
+        var sameItem = await dataContext.CartItems
+            .FirstOrDefaultAsync(x =>
+                x.ProductId == cartItem.ProductId &&
+                x.ProductTypeId == cartItem.ProductTypeId &&
+                x.UserId == cartItem.UserId);
+
+        if (sameItem is null)
+        {
+            dataContext.CartItems.Add(cartItem);
+        }
+        else
+        {
+            sameItem.Quantity += cartItem.Quantity;
+        }
+
+        await dataContext.SaveChangesAsync();
+        return new ServiceResponse<bool> { Data = true, Sucess = true };
+
+    }
+
     public async Task<ServiceResponse<int>> GetCartItemsCount()
     {
         var count = (await dataContext.CartItems!
