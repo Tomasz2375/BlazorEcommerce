@@ -20,15 +20,15 @@ public class CartService : ICartService
     {
         cartItem.UserId = getUserId();
 
-        var sameItem = await dataContext.CartItems
+        var sameItem = await dataContext.CartItems!
             .FirstOrDefaultAsync(x =>
                 x.ProductId == cartItem.ProductId &&
                 x.ProductTypeId == cartItem.ProductTypeId &&
-                x.UserId == cartItem.UserId);
+                x.UserId == getUserId());
 
         if (sameItem is null)
         {
-            dataContext.CartItems.Add(cartItem);
+            dataContext.CartItems!.Add(cartItem);
         }
         else
         {
@@ -113,6 +113,31 @@ public class CartService : ICartService
 
         return await GetDbCartProducts();
     }
+
+    public async Task<ServiceResponse<bool>> UpdateQuantity(CartItem cartItem)
+    {
+        var dbCartItem = await dataContext.CartItems!
+            .FirstOrDefaultAsync(x =>
+                x.ProductId == cartItem.ProductId &&
+                x.ProductTypeId == cartItem.ProductTypeId &&
+                x.UserId == getUserId());
+
+        if (dbCartItem is null)
+        {
+            return new ServiceResponse<bool>
+            {
+                Data = false,
+                Sucess = false,
+                Message = "Cart item does not exist",
+            };
+        }
+
+        dbCartItem.Quantity = cartItem.Quantity;
+        await dataContext.SaveChangesAsync();
+
+        return new ServiceResponse<bool> { Data = true, Sucess = true, };
+    }
+
     private int getUserId() =>
         int.Parse(httpContextAccessor.HttpContext!
             .User.FindFirstValue(ClaimTypes.NameIdentifier));
