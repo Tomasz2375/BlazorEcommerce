@@ -10,5 +10,5 @@ public class Order
     [Column(TypeName = "decimal(18,2)")]
     public decimal TotalPrice { get; set; }
 
-    public List<OrderItem> Items { get; set;} = new List<OrderItem>();
+    public List<OrderItem> OrderItems { get; set;} = new List<OrderItem>();
 }
