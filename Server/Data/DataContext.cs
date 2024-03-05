@@ -19,6 +19,11 @@ public class DataContext : DbContext
         modelBuilder.Entity<OrderItem>()
             .HasKey(oi => new { oi.OrderId, oi.ProductId, oi.ProductTypeId });
 
+        modelBuilder.Entity<Order>()
+            .HasMany(o => o.OrderItems)
+            .WithOne(o => o.Order)
+            .HasForeignKey(o => o.OrderId);
+
         modelBuilder.Entity<Category>().HasData(
             new Category()
             {
