@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorEcommerce.Shared.Dtos;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Net.Http.Json;
 
 namespace BlazorEcommerce.Client.Services.OrderService;
 
@@ -17,6 +19,12 @@ public class OrderService : IOrderService
         this.httpClient = httpClient;
         this.authenticationStateProvider = authenticationStateProvider;
         this.navigationManager = navigationManager;
+    }
+
+    public async Task<List<OrderOverviewResponse>> GetOrders()
+    {
+        var result = await httpClient.GetFromJsonAsync<ServiceResponse<List<OrderOverviewResponse>>>("api/order");
+        return result!.Data!;
     }
 
     public async Task PlaceOrder()
