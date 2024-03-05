@@ -1,4 +1,5 @@
 ﻿using BlazorEcommerce.Server.Data;
+using BlazorEcommerce.Server.Services.AuthenticationServices;
 using BlazorEcommerce.Server.Services.CartService;
 using System.Security.Claims;
 
@@ -8,22 +9,22 @@ public class OrderService : IOrderService
 {
     private readonly DataContext dataContext;
     private readonly ICartService cartService;
-    private readonly IHttpContextAccessor httpContextAccessor;
+    private readonly IAuthenticationService authenticationService;
 
     public OrderService(
         DataContext dataContext,
         ICartService cartService,
-        IHttpContextAccessor httpContextAccessor)
+        IAuthenticationService authenticationService)
     {
         this.dataContext = dataContext;
         this.cartService = cartService;
-        this.httpContextAccessor = httpContextAccessor;
+        this.authenticationService = authenticationService;
     }
 
     public async Task<ServiceResponse<bool>> PlaceOrder()
     {
         var products = (await cartService.GetDbCartProducts()).Data;
-
+        var userId = authenticationService.GetUserId();
         decimal totalPrice = 0;
         products!.ForEach(product => totalPrice += product.Price * product.Quantity);
 
@@ -38,20 +39,17 @@ public class OrderService : IOrderService
 
         var order = new Order()
         {
-            UserId = GetUserId(),
+            UserId = userId,
             OrderDate = DateTime.UtcNow,
             TotalPrice = totalPrice,
             Items = orderItems
         };
         dataContext.Orders!.Add(order);
         dataContext.CartItems!.RemoveRange(dataContext.CartItems
-            .Where(x => x.UserId == GetUserId()));
+            .Where(x => x.UserId == userId));
 
         await dataContext.SaveChangesAsync();
 
         return new ServiceResponse<bool> { Data = true, Sucess = true };
     }
-
-    private int GetUserId() =>
-        int.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier));
 }
