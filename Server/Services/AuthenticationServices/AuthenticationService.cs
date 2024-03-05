@@ -12,13 +12,23 @@ public class AuthenticationService : IAuthenticationService
 {
     private readonly DataContext dataContext;
     private readonly IConfiguration configuration;
+    private readonly IHttpContextAccessor httpContextAccessor;
 
-    public AuthenticationService(DataContext dataContext, IConfiguration configuration)
+    public AuthenticationService(
+        DataContext dataContext,
+        IConfiguration configuration,
+        IHttpContextAccessor httpContextAccessor)
     {
         this.dataContext = dataContext;
         this.configuration = configuration;
+        this.httpContextAccessor = httpContextAccessor;
     }
 
+    public int GetUserId() =>
+        int.Parse(httpContextAccessor
+            .HttpContext!
+            .User
+            .FindFirstValue(ClaimTypes.NameIdentifier));
 
     public async Task<ServiceResponse<string>> Login(string email, string password)
     {
