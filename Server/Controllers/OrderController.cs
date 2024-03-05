@@ -1,4 +1,5 @@
 ﻿using BlazorEcommerce.Server.Services.OrderService;
+using BlazorEcommerce.Shared.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorEcommerce.Server.Controllers;
@@ -18,6 +19,14 @@ public class OrderController : ControllerBase
     public async Task<ActionResult<ServiceResponse<bool>>> PlaceOrder()
     {
         var result = await orderService.PlaceOrder();
+
+        return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<ServiceResponse<List<OrderOverviewResponse>>>> GetOrders()
+    {
+        var result = await orderService.GetOrders();
 
         return Ok(result);
     }
