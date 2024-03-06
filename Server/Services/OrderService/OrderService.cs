@@ -3,7 +3,6 @@ using BlazorEcommerce.Server.Services.AuthenticationServices;
 using BlazorEcommerce.Server.Services.CartService;
 using BlazorEcommerce.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace BlazorEcommerce.Server.Services.OrderService;
 
@@ -23,12 +22,56 @@ public class OrderService : IOrderService
         this.authenticationService = authenticationService;
     }
 
+    public async Task<ServiceResponse<OrderDetailsResponse>> GetOrderDetails(int orderId)
+    {
+        var response = new ServiceResponse<OrderDetailsResponse>();
+        var order = await dataContext.Orders!
+            .Include(x => x.OrderItems)
+                .ThenInclude(x => x.Product)
+            .Include(x => x.OrderItems)
+                .ThenInclude(x => x.ProductType)
+            .Where(x => x.Id == orderId &&
+                x.UserId == authenticationService.GetUserId())
+            .OrderByDescending(x => x.OrderDate)
+            .FirstOrDefaultAsync();
+
+        if (order is null)
+        {
+            response.Sucess = false;
+            response.Message = "Order not found";
+            return response;
+        }
+
+        var orderDetailsResponse = new OrderDetailsResponse()
+        {
+            OrderDate = order.OrderDate,
+            TotalPrice = order.TotalPrice,
+            Products = new List<OrderDetailsPropductResponse>(),
+        };
+
+        order.OrderItems.ForEach(x =>
+        {
+            orderDetailsResponse.Products.Add(new OrderDetailsPropductResponse()
+            {
+                ProductId = x.ProductId,
+                ImageUrl = x.Product.ImageUrl,
+                ProductType = x.ProductType.Name,
+                Quantity = x.Quantity,
+                Title = x.Product.Title,
+                TotalPrice = x.TotalPrice,
+            });
+        });
+
+        response.Data = orderDetailsResponse;
+        return response;
+    }
+
     public async Task<ServiceResponse<List<OrderOverviewResponse>>> GetOrders()
     {
         var response = new ServiceResponse<List<OrderOverviewResponse>>();
         var orders = await dataContext.Orders!
             .Include(x => x.OrderItems)
-            .ThenInclude(x => x.Product)
+                .ThenInclude(x => x.Product)
             .Where(x => x.UserId == authenticationService.GetUserId())
             .OrderByDescending(x => x.OrderDate)
             .ToListAsync();
