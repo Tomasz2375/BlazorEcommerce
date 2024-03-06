@@ -1,4 +1,4 @@
-﻿@page "/orders"
+﻿@page "/order"
 @inject IOrderService OrderService
 
 @if (orders is null)
@@ -20,7 +20,7 @@ else
             <div class="details">
                 <h4>@order.Product</h4>
                 <span>@order.OrderDate</span>
-                <a href="orders/@order.Id">Show more...</a>
+                <a href="order/@order.Id">Show more...</a>
             </div>
             <div class="order-price">$@order.TotalPrice</div>
         </div>
