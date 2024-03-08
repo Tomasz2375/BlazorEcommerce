@@ -34,15 +34,17 @@ public class OrderService : IOrderService
         return result!.Data!;
     }
 
-    public async Task PlaceOrder()
+    public async Task<string> PlaceOrder()
     {
         if (await isUserAuthenticated())
         {
-            await httpClient.PostAsync("api/order", null);
+            var result = await httpClient.PostAsync("api/payment/checkout", null);
+            return await result.Content.ReadAsStringAsync();
+
         }
         else
         {
-            navigationManager.NavigateTo("login");
+            return "login";
         }
     }
 
