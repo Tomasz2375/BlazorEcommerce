@@ -30,6 +30,12 @@ public class AuthenticationService : IAuthenticationService
             .User
             .FindFirstValue(ClaimTypes.NameIdentifier));
 
+    public string GetUserEmail() =>
+        httpContextAccessor
+            .HttpContext!
+            .User
+            .FindFirstValue(ClaimTypes.Name);
+
     public async Task<ServiceResponse<string>> Login(string email, string password)
     {
         var response = new ServiceResponse<string>();
@@ -112,6 +118,7 @@ public class AuthenticationService : IAuthenticationService
         await dataContext
         .Users!
         .AnyAsync(x => x.Email.ToLower().Equals(email.ToLower()));
+
 
     private void createPasswordHash(
         string password,
