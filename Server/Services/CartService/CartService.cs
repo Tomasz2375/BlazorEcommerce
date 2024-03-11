@@ -101,10 +101,14 @@ public class CartService : ICartService
         return result;
     }
 
-    public async Task<ServiceResponse<List<CartProductResponseDto>>> GetDbCartProducts()
+    public async Task<ServiceResponse<List<CartProductResponseDto>>> GetDbCartProducts(int? userId)
     {
-        return await GetCartPrductAsync(await dataContext.CartItems
-            .Where(x => x.UserId == authenticationService.GetUserId()).ToListAsync());
+        userId = userId is null ?
+            authenticationService.GetUserId() :
+            userId;
+
+        return await GetCartPrductAsync(await dataContext.CartItems!
+            .Where(x => x.UserId == userId).ToListAsync());
     }
 
     public async Task<ServiceResponse<bool>> RemoveItemFromCart(int productId, int productTypeId)
@@ -137,7 +141,7 @@ public class CartService : ICartService
         dataContext.CartItems!.AddRange(cartItems);
         await dataContext.SaveChangesAsync();
 
-        return await GetDbCartProducts();
+        return await GetDbCartProducts(null);
     }
 
     public async Task<ServiceResponse<bool>> UpdateQuantity(CartItem cartItem)
