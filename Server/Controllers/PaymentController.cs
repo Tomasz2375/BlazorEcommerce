@@ -22,4 +22,16 @@ public class PaymentController : ControllerBase
 
         return Ok(session.Url);
     }
+
+    [HttpPost]
+    public async Task<ActionResult<ServiceResponse<bool>>> FulFillOrder()
+    {
+        var response = await paymentService.FulFillOrder(Request);
+        if (!response.Sucess)
+        {
+            return BadRequest(response.Message);
+        }
+
+        return Ok(response);
+    }
 }
