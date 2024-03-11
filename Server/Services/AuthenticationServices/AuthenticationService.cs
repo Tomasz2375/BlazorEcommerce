@@ -163,4 +163,11 @@ public class AuthenticationService : IAuthenticationService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    public async Task<User> GetUserByEmail(string email)
+    {
+        return await dataContext
+            .Users!
+            .FirstOrDefaultAsync(x => x.Email.Equals(email))!;
+    }
 }
