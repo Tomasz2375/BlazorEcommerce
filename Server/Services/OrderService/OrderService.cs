@@ -93,10 +93,9 @@ public class OrderService : IOrderService
         return response;
     }
 
-    public async Task<ServiceResponse<bool>> PlaceOrder()
+    public async Task<ServiceResponse<bool>> PlaceOrder(int userId)
     {
-        var products = (await cartService.GetDbCartProducts()).Data;
-        var userId = authenticationService.GetUserId();
+        var products = (await cartService.GetDbCartProducts(userId)).Data;
         decimal totalPrice = 0;
         products!.ForEach(product => totalPrice += product.Price * product.Quantity);
 
