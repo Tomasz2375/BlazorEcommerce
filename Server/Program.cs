@@ -1,5 +1,6 @@
 global using BlazorEcommerce.Shared;
 using BlazorEcommerce.Server.Data;
+using BlazorEcommerce.Server.Services.AddressServices;
 using BlazorEcommerce.Server.Services.AuthenticationServices;
 using BlazorEcommerce.Server.Services.CartService;
 using BlazorEcommerce.Server.Services.CategoryServices;
@@ -31,6 +32,7 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
