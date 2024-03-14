@@ -18,7 +18,7 @@ public class AddressService : IAddressService
     }
     public async Task<ServiceResponse<Address>> AddOrUpdate(Address address)
     {
-        var response = ServiceResponse<Address>();
+        var response = new ServiceResponse<Address>();
         var dbAddress = (await GetAddress()).Data;
         if (dbAddress is null)
         {
@@ -35,7 +35,13 @@ public class AddressService : IAddressService
             dbAddress.City = address.City;
             dbAddress.Zip = address.Zip;
             dbAddress.State = address.State;
+
+            response.Data = dbAddress;
         }
+
+        await dataContext.SaveChangesAsync();
+
+        return response;
     }
 
     public async Task<ServiceResponse<Address>> GetAddress()
