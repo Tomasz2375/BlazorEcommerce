@@ -31,7 +31,7 @@ public class CategoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpDelete("admin"), Authorize(Roles = "Admin")]
+    [HttpDelete("admin/{id}"), Authorize(Roles = "Admin")]
     public async Task<ActionResult<ServiceResponse<List<Category>>>> DeleteCategories(int id)
     {
         var result = await categoryService.DeleteCategory(id);
