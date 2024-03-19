@@ -1,5 +1,4 @@
-﻿using BlazorEcommerce.Shared;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 
 namespace BlazorEcommerce.Client.Services.CategoryService;
 
@@ -29,7 +28,7 @@ public class CategoryService : ICategoryService
         OnChange.Invoke();
     }
 
-    public Category CreateCategory(Category category)
+    public Category CreateCategory()
     {
         var newCategory = new Category
         {
