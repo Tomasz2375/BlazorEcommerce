@@ -1,5 +1,4 @@
 ﻿using BlazorEcommerce.Server.Services.ProductService;
-using BlazorEcommerce.Shared;
 using BlazorEcommerce.Shared.Dtos;
 using Microsoft.AspNetCore.Mvc;
 

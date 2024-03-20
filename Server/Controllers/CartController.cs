@@ -1,7 +1,6 @@
 ﻿using BlazorEcommerce.Server.Services.CartService;
 using BlazorEcommerce.Shared.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace BlazorEcommerce.Server.Controllers;
 
