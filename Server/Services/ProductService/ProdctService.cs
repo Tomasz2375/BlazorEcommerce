@@ -18,9 +18,9 @@ public class ProdctService : IProductService
         var response = new ServiceResponse<Product>();
         var product = await dataContext
             .Products!
-            .Include(x => x.Variants)
+            .Include(x => x.Variants.Where(v => v.Visible && !v.Deleted))
             .ThenInclude(x => x.ProductType)
-            .FirstOrDefaultAsync(x => x.Id == productId);
+            .FirstOrDefaultAsync(x => x.Id == productId && !x.Deleted && x.Visible);
 
         if(product is null)
         {
@@ -41,7 +41,9 @@ public class ProdctService : IProductService
         var response = new ServiceResponse<List<Product>>
         {
             Data = await dataContext.Set<Product>()
-            .Include(x => x.Variants)
+            .Where(x => x.Visible && !x.Deleted)
+            .Include(x => x.Variants
+                .Where(y => y.Visible && !y.Deleted))
             .ToListAsync(),
         };
 
@@ -53,8 +55,10 @@ public class ProdctService : IProductService
         var response = new ServiceResponse<List<Product>>
         {
             Data = await dataContext.Products!
-                .Where(x => x.Category!.Url.ToLower() == categoryUrl.ToLower())
-                .Include(x => x.Variants)
+                .Where(x => x.Category!.Url.ToLower() == categoryUrl.ToLower() &&
+                    x.Visible && !x.Deleted)
+                .Include(x => x.Variants
+                    .Where(y => y.Visible && !y.Deleted))
                 .ToListAsync()
         };
 
@@ -70,7 +74,9 @@ public class ProdctService : IProductService
             .Include(x => x.Variants)
             .Where(x =>
                 x.Title.ToLower().Contains(phrase.ToLower()) ||
-                x.Description.ToLower().Contains(phrase.ToLower()))
+                x.Description.ToLower().Contains(phrase.ToLower()) &&
+                x.Visible &&
+                !x.Deleted)
             .Skip((page - 1) * pageResults)
             .Take(pageResults)
             .ToListAsync();
@@ -132,8 +138,9 @@ public class ProdctService : IProductService
         {
             Data = await dataContext
             .Products!
-            .Include(x => x.Variants)
-            .Where(x => x.Featured)
+            .Include(x => x.Variants
+                .Where(y => y.Visible && !y.Deleted))
+            .Where(x => x.Featured && x.Visible && !x.Deleted)
             .ToListAsync(),
         };
 
@@ -144,10 +151,12 @@ public class ProdctService : IProductService
     {
         return await dataContext
                     .Products!
-                    .Include(x => x.Variants)
                     .Where(x =>
                         x.Title.ToLower().Contains(phrase.ToLower()) ||
-                        x.Description.ToLower().Contains(phrase.ToLower()))
+                        x.Description.ToLower().Contains(phrase.ToLower()) &&
+                        x.Visible &&
+                        !x.Deleted)
+                    .Include(x => x.Variants)
                     .ToListAsync();
     }
 }
