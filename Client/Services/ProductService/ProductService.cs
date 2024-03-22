@@ -14,12 +14,26 @@ public class ProductService : IProductService
     }
 
     public List<Product> Products { get; set; } = new();
+    public List<Product> AdminProducts { get; set; } = new();
     public string Message { get; set; } = "Loading products...";
     public int CurrentPage { get; set; } = 1;
     public int PageCount { get; set; }
     public string LastSearchText { get; set; } = string.Empty;
 
     public event Action ProductsChanged;
+
+    public async Task GetAdminProducts()
+    {
+        var result = await httpClient.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product/admin");
+
+        AdminProducts = result!.Data!;
+        CurrentPage = 1;
+        PageCount = 0;
+        if (AdminProducts.Count == 0)
+        {
+            Message = "No products found.";
+        }
+    }
 
     public async Task<ServiceResponse<Product>> GetProduct(int productId)
     {
