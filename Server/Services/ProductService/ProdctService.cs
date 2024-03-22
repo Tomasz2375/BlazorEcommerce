@@ -132,6 +132,21 @@ public class ProdctService : IProductService
         return new ServiceResponse<List<string>> { Data = result };
     }
 
+    public async Task<ServiceResponse<List<Product>>> GetAdminProducts()
+    {
+        var response = new ServiceResponse<List<Product>>
+        {
+            Data = await dataContext.Set<Product>()
+                .Where(x => !x.Deleted)
+                .Include(x => x.Variants
+                    .Where(y => !y.Deleted))
+                .ThenInclude(x => x.ProductType)
+                .ToListAsync(),
+        };
+
+        return response;
+    }
+
     public async Task<ServiceResponse<List<Product>>> GetFeaturedProducts()
     {
         var response = new ServiceResponse<List<Product>>()
@@ -159,4 +174,5 @@ public class ProdctService : IProductService
                     .Include(x => x.Variants)
                     .ToListAsync();
     }
+
 }

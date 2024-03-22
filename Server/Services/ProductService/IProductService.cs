@@ -10,4 +10,5 @@ public interface IProductService
     Task<ServiceResponse<ProductSearchResultDto>> SearchProducts(string phrase, int page);
     Task<ServiceResponse<List<string>>> GetProductSearchSuggesions(string phrase);
     Task<ServiceResponse<List<Product>>> GetFeaturedProducts();
+    Task<ServiceResponse<List<Product>>> GetAdminProducts();
 }
