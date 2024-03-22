@@ -1,5 +1,6 @@
 ﻿using BlazorEcommerce.Server.Services.ProductService;
 using BlazorEcommerce.Shared.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazorEcommerce.Server.Controllers;
@@ -13,6 +14,14 @@ public class ProductController : ControllerBase
     public ProductController(IProductService productService)
     {
         this.productService = productService;
+    }
+
+    [HttpGet("admin"), Authorize(Roles = "Admin")]
+    public async Task<ActionResult<ServiceResponse<List<Product>>>> GetAdminProducts()
+    {
+        var result = await productService.GetAdminProducts();
+
+        return Ok(result);
     }
 
     [HttpGet]
