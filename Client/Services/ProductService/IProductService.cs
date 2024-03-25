@@ -17,4 +17,8 @@ public interface IProductService
     Task SearchProducts(string phrase, int page);
     Task<List<string>> GetProductSearchSuggestion(string phrase);
     Task GetAdminProducts();
+
+    Task<Product> CreateProduct(Product product);
+    Task<Product> UpdateProduct(Product product);
+    Task DeleteProduct(Product product);
 }
