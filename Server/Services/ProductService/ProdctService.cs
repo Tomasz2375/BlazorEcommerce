@@ -108,6 +108,95 @@ public class ProdctService : IProductService
         };
 
         return response;
+
+    }
+
+    public async Task<ServiceResponse<Product>> CreateProduct(Product product)
+    {
+        foreach (var variant in product.Variants)
+        {
+            variant.ProductType = null!;
+        }
+
+        dataContext.Products!.Add(product);
+        await dataContext.SaveChangesAsync();
+
+        return new ServiceResponse<Product>()
+        {
+            Data = product,
+        };
+    }
+
+    public async Task<ServiceResponse<Product>> UpdateProduct(Product product)
+    {
+        var dbProduct = await dataContext.Products!.FirstOrDefaultAsync(x => x.Id == product.Id);
+
+        if (dbProduct is null)
+        {
+            return new ServiceResponse<Product>
+            {
+                Sucess = false,
+                Message = "Product not found",
+            };
+        }
+
+        dbProduct.Title = product.Title;
+        dbProduct.Description = product.Description;
+        dbProduct.ImageUrl = product.ImageUrl;
+        dbProduct.CategoryId = product.CategoryId;
+        dbProduct.Visible = product.Visible;
+
+        foreach (var variant in product.Variants)
+        {
+            var dbVariant = await dataContext.ProductVariants!
+                .SingleOrDefaultAsync(x =>
+                    x.ProductId == variant.ProductId &&
+                    x.ProductTypeId == variant.ProductTypeId);
+            if (dbVariant is null)
+            {
+                variant.ProductType = null!;
+                dataContext.ProductVariants!.Add(variant);
+            }
+            else
+            {
+                dbVariant.ProductTypeId = variant.ProductTypeId;
+                dbVariant.Price = variant.Price;
+                dbVariant.OriginalPrice = variant.OriginalPrice;
+                dbVariant.Visible = variant.Visible;
+                dbVariant.Deleted = variant.Deleted;
+            }
+        }
+
+        await dataContext.SaveChangesAsync();
+
+        return new ServiceResponse<Product>
+        {
+            Data = product,
+            Sucess = true,
+        };
+    }
+
+    public async Task<ServiceResponse<bool>> DeleteProduct(int productId)
+    {
+        var dbProduct = await dataContext.Products!.FirstOrDefaultAsync(x => x.Id == productId);
+        if (dbProduct is null)
+        {
+            return new ServiceResponse<bool>
+            {
+                Data = false,
+                Sucess = false,
+                Message = "Product not found",
+            };
+        }
+
+        dbProduct.Deleted = true;
+        await dataContext.SaveChangesAsync();
+
+        return new ServiceResponse<bool>()
+        {
+            Data = true,
+            Sucess = true,
+        };
     }
 
     public async Task<ServiceResponse<List<string>>> GetProductSearchSuggesions(string phrase)
