@@ -7,9 +7,9 @@ namespace BlazorEcommerce.Server.Services.ProductService;
 public class ProdctService : IProductService
 {
     private readonly DataContext dataContext;
-    private readonly HttpContextAccessor httpContextAccessor;
+    private readonly IHttpContextAccessor httpContextAccessor;
 
-    public ProdctService(DataContext dataContext, HttpContextAccessor httpContextAccessor)
+    public ProdctService(DataContext dataContext, IHttpContextAccessor httpContextAccessor)
     {
         this.dataContext = dataContext;
         this.httpContextAccessor = httpContextAccessor;
