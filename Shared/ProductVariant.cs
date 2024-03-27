@@ -10,8 +10,8 @@ public class ProductVariant
     public int ProductTypeId { get; set; }
 
     [JsonIgnore]
-    public Product Product { get; set; }
-    public ProductType ProductType { get; set; }
+    public Product? Product { get; set; }
+    public ProductType? ProductType { get; set; }
 
     public bool Visible { get; set; } = true;
     public bool Deleted { get; set; }
