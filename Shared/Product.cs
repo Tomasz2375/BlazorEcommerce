@@ -23,4 +23,5 @@ public class Product
     public Category? Category { get; set; }
 
     public List<ProductVariant> Variants { get; set; } = new();
+    public List<Image> Images { get; set; } = new();
 }
