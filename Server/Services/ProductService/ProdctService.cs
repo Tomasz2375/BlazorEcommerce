@@ -133,7 +133,10 @@ public class ProdctService : IProductService
 
     public async Task<ServiceResponse<Product>> UpdateProduct(Product product)
     {
-        var dbProduct = await dataContext.Products!.FirstOrDefaultAsync(x => x.Id == product.Id);
+        var dbProduct = await dataContext
+            .Products!
+            .Include(x => x.Images)
+            .FirstOrDefaultAsync(x => x.Id == product.Id);
 
         if (dbProduct is null)
         {
@@ -150,6 +153,13 @@ public class ProdctService : IProductService
         dbProduct.CategoryId = product.CategoryId;
         dbProduct.Visible = product.Visible;
         dbProduct.Featured = product.Featured;
+
+        var productImages = dbProduct.Images;
+        dataContext.Images!.RemoveRange(productImages);
+        await dataContext.SaveChangesAsync();
+        dbProduct.Images = product.Images;
+        await dataContext.SaveChangesAsync();
+
 
         foreach (var variant in product.Variants)
         {
