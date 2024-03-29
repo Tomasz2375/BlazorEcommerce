@@ -26,6 +26,7 @@ public class ProdctService : IProductService
                 .Products!
                 .Include(x => x.Variants.Where(v => !v.Deleted))
                 .ThenInclude(x => x.ProductType)
+                .Include(x => x.Images)
                 .FirstOrDefaultAsync(x => x.Id == productId && !x.Deleted)!;
         }
         else
@@ -58,6 +59,7 @@ public class ProdctService : IProductService
         {
             Data = await dataContext.Set<Product>()
             .Where(x => x.Visible && !x.Deleted)
+            .Include(x => x.Images)
             .Include(x => x.Variants
                 .Where(y => y.Visible && !y.Deleted))
             .ToListAsync(),
@@ -75,6 +77,7 @@ public class ProdctService : IProductService
                     x.Visible && !x.Deleted)
                 .Include(x => x.Variants
                     .Where(y => y.Visible && !y.Deleted))
+                .Include(x => x.Images)
                 .ToListAsync()
         };
 
@@ -87,6 +90,7 @@ public class ProdctService : IProductService
         var pageCount = MathF.Ceiling((await getProductBySearchPhrase(phrase)).Count / (float)pageResults);
         var products = await dataContext
             .Products!
+            .Include(x => x.Images)
             .Include(x => x.Variants)
             .Where(x =>
                 x.Title.ToLower().Contains(phrase.ToLower()) ||
@@ -244,6 +248,7 @@ public class ProdctService : IProductService
         {
             Data = await dataContext.Set<Product>()
                 .Where(x => !x.Deleted)
+                .Include(x => x.Images)
                 .Include(x => x.Variants
                     .Where(y => !y.Deleted))
                 .ThenInclude(x => x.ProductType)
@@ -259,6 +264,7 @@ public class ProdctService : IProductService
         {
             Data = await dataContext
             .Products!
+            .Include(x => x.Images)
             .Include(x => x.Variants
                 .Where(y => y.Visible && !y.Deleted))
             .Where(x => x.Featured && x.Visible && !x.Deleted)
